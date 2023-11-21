@@ -35,7 +35,7 @@ type Options struct {
 	Approx bool
 }
 
-// Create a new stream with messages of type T.
+// NewStream Create a new stream with messages of type T.
 // Options are optional (the parameter can be nil to use defaults).
 func NewStream[T any](client redis.Cmdable, stream string, opt *Options) Stream[T] {
 	var approx bool
@@ -55,10 +55,10 @@ func (s Stream[T]) Key() string {
 }
 
 // Add a message to the stream. Calls XADD.
-func (s Stream[T]) Add(ctx context.Context, v T, idarg ...string) (string, error) {
+func (s Stream[T]) Add(ctx context.Context, v T, idArg ...string) (string, error) {
 	id := ""
-	if len(idarg) > 0 {
-		id = idarg[0]
+	if len(idArg) > 0 {
+		id = idArg[0]
 	}
 	var maxLen int64
 	if s.maxLen > NoMaxLen {
@@ -69,14 +69,14 @@ func (s Stream[T]) Add(ctx context.Context, v T, idarg ...string) (string, error
 		minID = strconv.Itoa(int(now().Add(-s.ttl).UnixMilli()))
 	}
 
-	vals, err := structToMap(v)
+	values, err := structToMap(v)
 	if err != nil {
 		return "", err
 	}
 
 	id, err = s.client.XAdd(ctx, &redis.XAddArgs{
 		Stream: s.stream,
-		Values: vals,
+		Values: values,
 		ID:     id,
 		MinID:  minID,
 		MaxLen: maxLen,
