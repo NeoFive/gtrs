@@ -1,4 +1,4 @@
-module gtrs
+module github.com/NeoFive/gtrs
 
 go 1.20
 
